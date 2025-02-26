@@ -16,20 +16,19 @@ const getLocation = async (ip) => {
     return "Unknown";
   }
 };
+
 export const login = async (req, res) => {
   const { username, password } = req.body;
 
   try {
     // 1. Find user
     const user = await User.findOne({ username });
-
     if (!user) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
     // 2. Validate password
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
     // 3. Log session
@@ -52,8 +51,18 @@ export const login = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.json({ token });
+    // 5. Set token in HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
+      secure: process.env.NODE_ENV === "production", // Only send over HTTPS in production
+      sameSite: "strict", // Prevent CSRF attacks
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    // 6. Send response
+    res.json({ message: "Login successful" });
   } catch (err) {
+    console.error("Login error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -64,8 +73,17 @@ export const logout = async (req, res) => {
       isActive: false,
       logoutAt: Date.now(),
     });
+
+    // Clear the token cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
     res.json({ message: "Logged out successfully" });
   } catch (err) {
+    console.error("Logout error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -92,6 +110,7 @@ export const changePassword = async (req, res) => {
 
     res.json({ message: "Password changed successfully" });
   } catch (err) {
+    console.error("Change password error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
