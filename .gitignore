@@ -1,0 +1,51 @@
+# Ignore node_modules for both frontend and backend
+**/node_modules/
+
+# Ignore environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Ignore build artifacts
+**/dist/
+**/build/
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore dependency directories
+**/.pnp
+.pnp.js
+
+# Ignore npm/yarn cache
+.npm
+.yarn
+.yarnrc
+yarn.lock
+package-lock.json
+
+# Ignore frontend-specific files (React + Vite)
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.production
+frontend/dist/
+frontend/build/
+frontend/node_modules/
+
+# Ignore backend-specific files (Node.js + Express)
+backend/.env
+backend/.env.local
+backend/.env.development
+backend/.env.production
+backend/node_modules/
